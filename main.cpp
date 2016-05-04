@@ -15,6 +15,9 @@ namespace cardet {
 
     // File with Haar classifier data
     std::string trainedData = "trainedData/HaarFeatures.xml";
+
+    // FPS of output video
+    const double outputFPS = 20.0;
 }
 
 int main(int argc, char **argv) {
@@ -50,12 +53,10 @@ int main(int argc, char **argv) {
     /* Opening output stream */
     int fourcc = (int) input.get(CV_CAP_PROP_FOURCC);
 
-    double fps = input.get(CV_CAP_PROP_FPS);
-
     cv::Size videoSize((int) input.get(CV_CAP_PROP_FRAME_WIDTH),
                        (int) input.get(CV_CAP_PROP_FRAME_HEIGHT));
 
-    cv::VideoWriter output(cardet::videoOutputName, fourcc, fps, videoSize, true);
+    cv::VideoWriter output(cardet::videoOutputName, fourcc, cardet::outputFPS, videoSize, true);
 
     if (!output.isOpened()) {
         std::cout << "Cannot open video for writing" << std::endl;
