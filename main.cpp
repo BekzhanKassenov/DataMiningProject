@@ -7,17 +7,24 @@ namespace cardet {
     const std::string videoWindowName = "Video";
     const std::string detectedWindowName = "After detection";
 
-    // Output file
-    const std::string videoOutputName = "/home/bekzhan/Programming/DataMiningProject/output.avi";
+    // Output file without extension
+    const std::string videoOutputName = "/home/bekzhan/Programming/DataMiningProject/output";
 
     // File with input data
-    std::string filename = "data/video.avi";
+    std::string videoInputName = "data/video.avi";
 
     // File with Haar classifier data
-    std::string trainedData = "trainedData/HaarFeatures.xml";
+    std::string trainedData = "config/HaarFeaturesCars.xml";
 
     // FPS of output video
     const double outputFPS = 20.0;
+
+    // Get extension of the file - everithing after the last dot
+    std::string getExtentsion(const std::string& filename) {
+        auto pos = filename.find_last_of('.');
+
+        return filename.substr(pos);
+    }
 }
 
 int main(int argc, char **argv) {
@@ -27,11 +34,11 @@ int main(int argc, char **argv) {
             break;
 
         case 2:
-            cardet::filename = argv[1];
+            cardet::videoInputName = argv[1];
             break;
 
         case 3:
-            cardet::filename = argv[1];
+            cardet::videoInputName = argv[1];
             cardet::trainedData = argv[2];
             break;
 
@@ -40,10 +47,10 @@ int main(int argc, char **argv) {
             return 1;
     }
 
-    std::cout << "Opening " << cardet::filename << std::endl;
+    std::cout << "Opening " << cardet::videoInputName << std::endl;
 
     /* Initializing input stream */
-    cv::VideoCapture input(cardet::filename);
+    cv::VideoCapture input(cardet::videoInputName);
 
     if (!input.isOpened()) {
         std::cerr << "Cannot open video!" << std::endl;
@@ -56,7 +63,8 @@ int main(int argc, char **argv) {
     cv::Size videoSize((int) input.get(CV_CAP_PROP_FRAME_WIDTH),
                        (int) input.get(CV_CAP_PROP_FRAME_HEIGHT));
 
-    cv::VideoWriter output(cardet::videoOutputName, fourcc, cardet::outputFPS, videoSize, true);
+    std::string outputFileName = cardet::videoOutputName + cardet::getExtentsion(cardet::videoInputName);
+    cv::VideoWriter output(outputFileName, fourcc, cardet::outputFPS, videoSize, true);
 
     if (!output.isOpened()) {
         std::cout << "Cannot open video for writing" << std::endl;
@@ -76,7 +84,7 @@ int main(int argc, char **argv) {
             break;
         }
 
-        // List of objects that were detected by classifier
+        // List of objects that were detected by the classifier
         std::vector <cv::Rect> detectedObjects;
 
         // Detection
